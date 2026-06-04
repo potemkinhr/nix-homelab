@@ -46,6 +46,7 @@ telegram.hr##.full.relative.center.single-top-banner
 telegram.hr##.full.relative.m-order-2 > .full.center.relative
 telegram.hr##.full.center.stocks-parent
 telegram.hr###offer-premium
+telegram.hr##div.softwall
 
 ! Bug
 *.bug.hr/ads
@@ -82,6 +83,7 @@ monitor.hr##article:has-text(Sponzorirana vijest)
 
 ! Index
 index.hr##article.news-item-container:has(.spon-text)
+index.hr###premium-sticky
 
 ! Novi list
 novilist.hr##.widget-slider-wrap
