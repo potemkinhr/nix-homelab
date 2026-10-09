@@ -84,6 +84,8 @@ monitor.hr##article:has-text(Sponzorirana vijest)
 ! Index
 index.hr##article.news-item-container:has(.spon-text)
 index.hr###premium-sticky
+! kill AdShield anti-adblock SDK
+||step.whoeverhow.com^$3p,script
 
 ! Novi list
 novilist.hr##.widget-slider-wrap
