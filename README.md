@@ -13,6 +13,14 @@ A production-grade, Infrastructure-as-Code monitoring stack running on Docker Co
 
 👉 **[View the full documentation here](./observability-stack/README.md)**
 
+### ⚙️ [Infrastructure & Automation Scripts](./scripts)
+A collection of custom Bash, PowerShell, and Python scripts used to automate system administration tasks, fix edge-case OS issues, and streamline daily workflows.
+
+*   **Environment:** Tested primarily on immutable Linux distributions (Aurora/uBlue), desktop Windows and enterprise systems.
+*   **Use Case:** Quick, idempotent fixes for complex Linux quirks and routine sysadmin automation.
+
+👉 **[View the full documentation here](./scripts/README.md)**
+
 ### 🛡️ [Nyx uBlock Origin Filter List](./filterlists/nyx-ubo-filterlist.txt)
 A custom filter list for uBlock Origin, maintained to block unwanted ads, elements and trackers.
 
