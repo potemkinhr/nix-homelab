@@ -1,0 +1,72 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    env: local
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+scrape_configs:
+  # Self-monitoring
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          host: docker
+          role: observability
+
+  - job_name: local-node
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          host: docker
+          role: observability
+
+  # ==========================================
+  # ADD YOUR OWN NODES BELOW
+  # ==========================================
+
+  # Linux Node (Requires node_exporter installed on the target)
+  # - job_name: linux-server
+  #   static_configs:
+  #     - targets: ['<LINUX_IP>:9100']
+  #       labels:
+  #         host: linux-server
+  #         os: linux
+  #         role: test-server
+
+  # Windows Node (Requires windows_exporter installed on the target)
+  # - job_name: windows-server
+  #   scrape_interval: 30s
+  #   static_configs:
+  #     - targets: ['<WINDOWS_IP>:9182']
+  #       labels:
+  #         host: windows-server
+  #         os: windows
+  #         role: test-server
+
+  # Custom App (Via JSON Exporter)
+  # - job_name: custom-app-system
+  #   scrape_interval: 30s
+  #   metrics_path: /probe
+  #   params:
+  #     module: [custom_stats]
+  #     target: ['http://<APP_IP>:<PORT>/system-stats']
+  #   static_configs:
+  #     - targets: ['json-exporter:7979']
+  #       labels:
+  #         host: app-server
+  #         app: custom-app
+  #         role: on-demand
+
+  # Custom App (Native Prometheus endpoint)
+  # - job_name: custom-app-api
+  #   scrape_interval: 30s
+  #   metrics_path: '/metrics'
+  #   static_configs:
+  #     - targets: ['<APP_IP>:<PORT>']
+  #       labels:
+  #         host: app-server
+  #         app: custom-app
+  #         role: on-demand

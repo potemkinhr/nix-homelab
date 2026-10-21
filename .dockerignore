@@ -1,0 +1,16 @@
+# Secrets and local config
+.env
+.env.*
+!.env.example
+secrets/**
+*.pem
+*.key
+
+# Editor
+.vscode/
+.idea/
+
+# Logs and db
+*.log
+*.db
+*.sqlite

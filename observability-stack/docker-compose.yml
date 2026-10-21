@@ -1,0 +1,143 @@
+name: observability-local
+
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+x-hardening: &hardening
+  restart: unless-stopped
+  security_opt: [no-new-privileges:true]
+  logging: *logging
+
+networks:
+  obs-net:
+    name: obs-net
+
+volumes:
+  prom-data:
+  grafana-data:
+  loki-data:
+  uptime-kuma-data:
+
+services:
+  prometheus:
+    <<: *hardening
+    image: prom/prometheus:v3.15.0
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+      - --storage.tsdb.retention.size=2GB
+      - --web.enable-lifecycle
+      # DYNAMIC URL INJECTION
+      - --web.external-url=${PROMETHEUS_ROOT_URL:-http://localhost:9090}
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules:/etc/prometheus/rules:ro
+      - prom-data:/prometheus
+    networks: [obs-net]
+    ports:
+      - "9090:9090"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768M }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  node-exporter:
+    <<: *hardening
+    image: prom/node-exporter:v1.12.1
+    container_name: node-exporter
+    pid: host
+    volumes:
+      - /:/host:ro,rslave,z
+    command:
+      - --path.rootfs=/host
+    networks: [obs-net]
+    ports:
+      - "9100:9100"
+    deploy:
+      resources:
+        limits: { cpus: "0.2", memory: 64M }
+
+  # UNCOMMENT if scraping metrics in json
+  # json-exporter:
+  #   <<: *hardening
+  #   image: prometheuscommunity/json-exporter:v0.8.0
+  #   container_name: json-exporter
+  #   volumes:
+  #     - ./json-exporter/config.yml:/config.yml:ro
+  #   command: --config.file=/config.yml
+  #   networks: [obs-net]
+  #   expose: ["7979"]
+  #   read_only: true
+  #   deploy:
+  #     resources:
+  #       limits: { cpus: "0.1", memory: 64M }
+
+  grafana:
+    <<: *hardening
+    image: grafana/grafana:13.2.4
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set in .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      # DYNAMIC URL INJECTION
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3000}
+      GF_PUBLIC_DASHBOARDS_ENABLED: "true"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    networks: [obs-net]
+    ports:
+      - "3000:3000"
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 384M }
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  loki:
+    <<: *hardening
+    image: grafana/loki:3.7.8
+    container_name: loki
+    command: -config.file=/etc/loki/config.yml
+    volumes:
+      - ./loki/config.yml:/etc/loki/config.yml:ro
+      - loki-data:/loki
+    networks: [obs-net]
+    ports:
+      - "3100:3100"
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 512M }
+
+  uptime-kuma:
+    <<: *hardening
+    image: louislam/uptime-kuma:2-slim
+    container_name: uptime-kuma
+    volumes:
+      - uptime-kuma-data:/app/data
+    networks: [obs-net]
+    ports:
+      - "3001:3001"
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 256M }
+    healthcheck:
+      test: ["CMD", "extra/healthcheck"]
+      interval: 60s
+      timeout: 10s
+      retries: 3

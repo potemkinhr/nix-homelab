@@ -1,0 +1,18 @@
+modules:
+  custom_stats:
+    metrics:
+      - name: custom_app_cpu_percent
+        path: '{.cpu_percent}'
+        help: 'App CPU usage percentage'
+      - name: custom_app_gpu_percent
+        path: '{.gpu_percent}'
+        help: 'App GPU utilization percentage'
+      - name: custom_app_memory_gb
+        path: '{.memory_gb}'
+        help: 'App RAM usage in GB'
+      - name: custom_app_vram_gb
+        path: '{.vram_gb}'
+        help: 'App VRAM usage in GB'
+      - name: custom_app_npu_percent
+        path: '{.npu_percent // 0}'
+        help: 'App NPU utilization percentage'

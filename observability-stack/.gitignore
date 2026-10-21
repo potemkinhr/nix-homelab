@@ -1,0 +1,6 @@
+.env
+*.log
+data/
+loki-data/
+prom-data/
+grafana-data/
