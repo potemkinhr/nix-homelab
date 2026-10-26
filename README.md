@@ -22,7 +22,7 @@ A collection of custom Bash, PowerShell, and Python scripts used to automate sys
 👉 **[View the full documentation here](./scripts/README.md)**
 
 ### 🛡️ [Nyx uBlock Origin Filter List](./filterlists/nyx-ubo-filterlist.txt)
-A custom filter list for uBlock Origin, maintained to block unwanted ads, elements and trackers.
+A custom filter list for uBlock Origin, maintained to block unwanted ads, elements and trackers. Tailored mostly for Croatian websites, but encompass others too.
 
 **Installation:** Add the following URL to your uBlock Origin "Custom" filter lists:
 `https://cdn.jsdelivr.net/gh/potemkinhr/nix-homelab@main/filterlists/nyx-ubo-filterlist.txt`
